@@ -1,228 +1,268 @@
 # Types of Design Patterns
 
+# Design Patterns
+
 In this tutorial, we will explore different types of design patterns commonly used in software development. Design patterns are reusable solutions to common problems that occur during the design and implementation of software systems. They provide a structured approach to solving these problems and help in creating flexible, maintainable, and scalable code.
 
 ## Creational Patterns
 
 Creational patterns focus on object creation mechanisms, providing ways to create objects in a manner suitable for a particular situation. Some commonly used creational patterns include:
 
-- Factory Method: The Factory Method pattern defines an interface for creating objects, but lets subclasses decide which class to instantiate. This allows a class to defer instantiation to subclasses.
+### Factory Method
+
+The Factory Method pattern defines an interface for creating objects, but lets subclasses decide which class to instantiate. This allows a class to defer instantiation to subclasses.
 
 ```dart
-abstract class Shape {
-    void draw();
+abstract class Product {
+    void operation();
 }
 
-class Circle implements Shape {
+class ConcreteProductA implements Product {
     @override
-    void draw() {
-        print("Drawing a circle");
+    void operation() {
+        print('ConcreteProductA operation');
     }
 }
 
-class Square implements Shape {
+class ConcreteProductB implements Product {
     @override
-    void draw() {
-        print("Drawing a square");
+    void operation() {
+        print('ConcreteProductB operation');
     }
 }
 
-abstract class ShapeFactory {
-    Shape createShape();
+abstract class Creator {
+    Product factoryMethod();
 }
 
-class CircleFactory extends ShapeFactory {
+class ConcreteCreatorA implements Creator {
     @override
-    Shape createShape() {
-        return Circle();
+    Product factoryMethod() {
+        return ConcreteProductA();
     }
 }
 
-class SquareFactory extends ShapeFactory {
+class ConcreteCreatorB implements Creator {
     @override
-    Shape createShape() {
-        return Square();
+    Product factoryMethod() {
+        return ConcreteProductB();
     }
 }
 
 void main() {
-    ShapeFactory factory = CircleFactory();
-    Shape shape = factory.createShape();
-    shape.draw();
+    Creator creator = ConcreteCreatorA();
+    Product product = creator.factoryMethod();
+    product.operation();
 }
 ```
 
-- Abstract Factory: The Abstract Factory pattern provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+### Abstract Factory
+
+The Abstract Factory pattern provides an interface for creating families of related or dependent objects without specifying their concrete classes.
 
 ```dart
-abstract class Button {
-    void render();
+abstract class AbstractProductA {
+    void operation();
 }
 
-abstract class Checkbox {
-    void render();
+abstract class AbstractProductB {
+    void operation();
 }
 
-class WindowsButton implements Button {
+class ConcreteProductA1 implements AbstractProductA {
     @override
-    void render() {
-        print("Rendering a Windows button");
+    void operation() {
+        print('ConcreteProductA1 operation');
     }
 }
 
-class WindowsCheckbox implements Checkbox {
+class ConcreteProductA2 implements AbstractProductA {
     @override
-    void render() {
-        print("Rendering a Windows checkbox");
+    void operation() {
+        print('ConcreteProductA2 operation');
     }
 }
 
-class MacButton implements Button {
+class ConcreteProductB1 implements AbstractProductB {
     @override
-    void render() {
-        print("Rendering a Mac button");
+    void operation() {
+        print('ConcreteProductB1 operation');
     }
 }
 
-class MacCheckbox implements Checkbox {
+class ConcreteProductB2 implements AbstractProductB {
     @override
-    void render() {
-        print("Rendering a Mac checkbox");
+    void operation() {
+        print('ConcreteProductB2 operation');
     }
 }
 
-abstract class GUIFactory {
-    Button createButton();
-    Checkbox createCheckbox();
+abstract class AbstractFactory {
+    AbstractProductA createProductA();
+    AbstractProductB createProductB();
 }
 
-class WindowsFactory implements GUIFactory {
+class ConcreteFactory1 implements AbstractFactory {
     @override
-    Button createButton() {
-        return WindowsButton();
+    AbstractProductA createProductA() {
+        return ConcreteProductA1();
     }
 
     @override
-    Checkbox createCheckbox() {
-        return WindowsCheckbox();
+    AbstractProductB createProductB() {
+        return ConcreteProductB1();
     }
 }
 
-class MacFactory implements GUIFactory {
+class ConcreteFactory2 implements AbstractFactory {
     @override
-    Button createButton() {
-        return MacButton();
+    AbstractProductA createProductA() {
+        return ConcreteProductA2();
     }
 
     @override
-    Checkbox createCheckbox() {
-        return MacCheckbox();
+    AbstractProductB createProductB() {
+        return ConcreteProductB2();
     }
 }
 
 void main() {
-    GUIFactory factory = WindowsFactory();
-    Button button = factory.createButton();
-    Checkbox checkbox = factory.createCheckbox();
-    button.render();
-    checkbox.render();
+    AbstractFactory factory = ConcreteFactory1();
+    AbstractProductA productA = factory.createProductA();
+    AbstractProductB productB = factory.createProductB();
+    productA.operation();
+    productB.operation();
 }
 ```
 
-- Singleton: The Singleton pattern ensures that a class has only one instance and provides a global point of access to it.
+### Singleton
+
+The Singleton pattern ensures that a class has only one instance and provides a global point of access to it.
 
 ```dart
 class Singleton {
-    static Singleton? _instance;
+    static Singleton _instance;
+
+    factory Singleton() {
+        if (_instance == null) {
+            _instance = Singleton._();
+        }
+        return _instance;
+    }
 
     Singleton._();
-
-    static Singleton getInstance() {
-        _instance ??= Singleton._();
-        return _instance!;
-    }
 }
 
 void main() {
-    Singleton singleton = Singleton.getInstance();
-    // Use the singleton instance
+    Singleton singleton1 = Singleton();
+    Singleton singleton2 = Singleton();
+    print(identical(singleton1, singleton2)); // Output: true
 }
 ```
 
-- Builder: The Builder pattern separates the construction of a complex object from its representation, allowing the same construction process to create different representations.
+### Builder
+
+The Builder pattern separates the construction of a complex object from its representation, allowing the same construction process to create different representations.
 
 ```dart
-class Car {
-    final String brand;
-    final String model;
-    final int year;
-    // Other attributes
+class Product {
+    String partA;
+    String partB;
+    String partC;
 
-    Car._(Builder builder)
-            : brand = builder.brand,
-                model = builder.model,
-                year = builder.year;
-    // Set other attributes
-
-    factory Car(Builder builder) {
-        return Car._(builder);
+    @override
+    String toString() {
+        return 'Product: $partA, $partB, $partC';
     }
 }
 
-class Builder {
-    final String brand;
-    final String model;
-    final int year;
-    // Other attributes
-
-    Builder(this.brand, this.model, this.year);
-    // Setters for other attributes
-
-    Car build() {
-        return Car(this);
-    }
+abstract class Builder {
+    void buildPartA();
+    void buildPartB();
+    void buildPartC();
+    Product getResult();
 }
 
-void main() {
-    Car car = Builder("Toyota", "Camry", 2022)
-            // Set other attributes
-            .build();
-}
-```
+class ConcreteBuilder implements Builder {
+    Product _product;
 
-- Prototype: The Prototype pattern allows creating new objects by cloning existing ones and modifying them as needed.
-
-```dart
-abstract class Shape implements Cloneable {
-    final String color;
-
-    Shape(this.color);
-
-    String getColor() {
-        return color;
-    }
-
-    Shape clone();
-}
-
-class Circle extends Shape {
-    final int radius;
-
-    Circle(String color, this.radius) : super(color);
-
-    int getRadius() {
-        return radius;
+    ConcreteBuilder() {
+        _product = Product();
     }
 
     @override
-    Shape clone() {
-        return Circle(getColor(), getRadius());
+    void buildPartA() {
+        _product.partA = 'Part A';
+    }
+
+    @override
+    void buildPartB() {
+        _product.partB = 'Part B';
+    }
+
+    @override
+    void buildPartC() {
+        _product.partC = 'Part C';
+    }
+
+    @override
+    Product getResult() {
+        return _product;
+    }
+}
+
+class Director {
+    Builder _builder;
+
+    Director(Builder builder) {
+        _builder = builder;
+    }
+
+    void construct() {
+        _builder.buildPartA();
+        _builder.buildPartB();
+        _builder.buildPartC();
     }
 }
 
 void main() {
-    Circle circle = Circle("Red", 5);
-    Circle clonedCircle = circle.clone() as Circle;
+    Builder builder = ConcreteBuilder();
+    Director director = Director(builder);
+    director.construct();
+    Product product = builder.getResult();
+    print(product); // Output: Product: Part A, Part B, Part C
+}
+```
+
+### Prototype
+
+The Prototype pattern allows creating new objects by cloning existing ones and modifying them as needed.
+
+```dart
+abstract class Prototype {
+    Prototype clone();
+}
+
+class ConcretePrototype implements Prototype {
+    String _name;
+
+    ConcretePrototype(this._name);
+
+    @override
+    Prototype clone() {
+        return ConcretePrototype(_name);
+    }
+
+    String get name => _name;
+    set name(String value) => _name = value;
+}
+
+void main() {
+    ConcretePrototype prototype = ConcretePrototype('Prototype');
+    ConcretePrototype clone = prototype.clone();
+    clone.name = 'Clone';
+    print(prototype.name); // Output: Prototype
+    print(clone.name); // Output: Clone
 }
 ```
 
@@ -230,319 +270,221 @@ void main() {
 
 Structural patterns deal with the composition of classes and objects, providing ways to form larger structures from individual parts. Some commonly used structural patterns include:
 
-- Adapter: The Adapter pattern allows objects with incompatible interfaces to work together by wrapping the object with a new interface.
+### Adapter
+
+The Adapter pattern allows objects with incompatible interfaces to work together by wrapping the object with a new interface.
 
 ```dart
-abstract class MediaPlayer {
-    void play(String audioType, String fileName);
-}
-
-abstract class AdvancedMediaPlayer {
-    void playVlc(String fileName);
-    void playMp4(String fileName);
-}
-
-class VlcPlayer implements AdvancedMediaPlayer {
-    @override
-    void playVlc(String fileName) {
-        print("Playing VLC file: $fileName");
-    }
-
-    @override
-    void playMp4(String fileName) {
-        // Do nothing
+class Adaptee {
+    void specificRequest() {
+        print('Adaptee specificRequest');
     }
 }
 
-class Mp4Player implements AdvancedMediaPlayer {
-    @override
-    void playVlc(String fileName) {
-        // Do nothing
-    }
-
-    @override
-    void playMp4(String fileName) {
-        print("Playing MP4 file: $fileName");
-    }
+abstract class Target {
+    void request();
 }
 
-class MediaAdapter implements MediaPlayer {
-    final AdvancedMediaPlayer advancedMediaPlayer;
+class Adapter implements Target {
+    Adaptee _adaptee;
 
-    MediaAdapter(String audioType)
-            : advancedMediaPlayer = audioType.toLowerCase() == "vlc"
-                        ? VlcPlayer()
-                        : audioType.toLowerCase() == "mp4"
-                                ? Mp4Player()
-                                : throw ArgumentError("Invalid audio type: $audioType");
+    Adapter(this._adaptee);
 
     @override
-    void play(String audioType, String fileName) {
-        if (audioType.toLowerCase() == "vlc") {
-            advancedMediaPlayer.playVlc(fileName);
-        } else if (audioType.toLowerCase() == "mp4") {
-            advancedMediaPlayer.playMp4(fileName);
-        }
-    }
-}
-
-class AudioPlayer implements MediaPlayer {
-    MediaAdapter? mediaAdapter;
-
-    @override
-    void play(String audioType, String fileName) {
-        if (audioType.toLowerCase() == "mp3") {
-            print("Playing MP3 file: $fileName");
-        } else if (audioType.toLowerCase() == "vlc" ||
-                audioType.toLowerCase() == "mp4") {
-            mediaAdapter = MediaAdapter(audioType);
-            mediaAdapter!.play(audioType, fileName);
-        } else {
-            print("Invalid media type: $audioType");
-        }
+    void request() {
+        _adaptee.specificRequest();
     }
 }
 
 void main() {
-    MediaPlayer audioPlayer = AudioPlayer();
-    audioPlayer.play("mp3", "song.mp3");
-    audioPlayer.play("vlc", "movie.vlc");
-    audioPlayer.play("mp4", "video.mp4");
+    Adaptee adaptee = Adaptee();
+    Target target = Adapter(adaptee);
+    target.request();
 }
 ```
 
-- Bridge: The Bridge pattern decouples an abstraction from its implementation, allowing the two to vary independently.
+### Bridge
+
+The Bridge pattern decouples an abstraction from its implementation, allowing the two to vary independently.
 
 ```dart
-abstract class Color {
-    void applyColor();
+abstract class Implementor {
+    void operationImpl();
 }
 
-class RedColor implements Color {
+class ConcreteImplementorA implements Implementor {
     @override
-    void applyColor() {
-        print("Applying red color");
+    void operationImpl() {
+        print('ConcreteImplementorA operationImpl');
     }
 }
 
-class BlueColor implements Color {
+class ConcreteImplementorB implements Implementor {
     @override
-    void applyColor() {
-        print("Applying blue color");
+    void operationImpl() {
+        print('ConcreteImplementorB operationImpl');
     }
 }
 
-abstract class Shape {
-    final Color color;
+abstract class Abstraction {
+    Implementor _implementor;
 
-    Shape(this.color);
+    Abstraction(this._implementor);
 
-    void applyColor();
-}
-
-class Square extends Shape {
-    Square(Color color) : super(color);
-
-    @override
-    void applyColor() {
-        print("Square: ");
-        color.applyColor();
+    void operation() {
+        _implementor.operationImpl();
     }
 }
 
-class Circle extends Shape {
-    Circle(Color color) : super(color);
-
-    @override
-    void applyColor() {
-        print("Circle: ");
-        color.applyColor();
-    }
+class RefinedAbstraction extends Abstraction {
+    RefinedAbstraction(Implementor implementor) : super(implementor);
 }
 
 void main() {
-    Shape redSquare = Square(RedColor());
-    redSquare.applyColor();
-
-    Shape blueCircle = Circle(BlueColor());
-    blueCircle.applyColor();
+    Implementor implementor = ConcreteImplementorA();
+    Abstraction abstraction = RefinedAbstraction(implementor);
+    abstraction.operation();
 }
 ```
 
-- Composite: The Composite pattern composes objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly.
+### Composite
+
+The Composite pattern composes objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly.
 
 ```dart
-abstract class Employee {
-    void showDetails();
+abstract class Component {
+    void operation();
 }
 
-class Developer implements Employee {
-    final String name;
-    final String position;
-
-    Developer(this.name, this.position);
-
+class Leaf implements Component {
     @override
-    void showDetails() {
-        print("Developer: $name, Position: $position");
+    void operation() {
+        print('Leaf operation');
     }
 }
 
-class Manager implements Employee {
-    final String name;
-    final String position;
+class Composite implements Component {
+    List<Component> _children = [];
 
-    Manager(this.name, this.position);
-
-    @override
-    void showDetails() {
-        print("Manager: $name, Position: $position");
-    }
-}
-
-class Team implements Employee {
-    final List<Employee> employees = [];
-
-    void addEmployee(Employee employee) {
-        employees.add(employee);
+    void add(Component component) {
+        _children.add(component);
     }
 
-    void removeEmployee(Employee employee) {
-        employees.remove(employee);
+    void remove(Component component) {
+        _children.remove(component);
     }
 
     @override
-    void showDetails() {
-        for (Employee employee in employees) {
-            employee.showDetails();
+    void operation() {
+        for (Component component in _children) {
+            component.operation();
         }
     }
 }
 
 void main() {
-    Employee john = Developer("John Doe", "Senior Developer");
-    Employee jane = Developer("Jane Smith", "Junior Developer");
-    Employee mike = Manager("Mike Johnson", "Project Manager");
-
-    Team team = Team();
-    team.addEmployee(john);
-    team.addEmployee(jane);
-    team.addEmployee(mike);
-
-    team.showDetails();
+    Component leaf1 = Leaf();
+    Component leaf2 = Leaf();
+    Component composite = Composite();
+    composite.add(leaf1);
+    composite.add(leaf2);
+    composite.operation();
 }
 ```
 
-- Decorator: The Decorator pattern attaches additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
+### Decorator
+
+The Decorator pattern attaches additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
 
 ```dart
-abstract class Pizza {
-    String getDescription();
-    double getCost();
+abstract class Component {
+    void operation();
 }
 
-class MargheritaPizza implements Pizza {
+class ConcreteComponent implements Component {
     @override
-    String getDescription() {
-        return "Margherita Pizza";
-    }
-
-    @override
-    double getCost() {
-        return 8.99;
+    void operation() {
+        print('ConcreteComponent operation');
     }
 }
 
-abstract class PizzaDecorator implements Pizza {
-    final Pizza pizza;
+abstract class Decorator implements Component {
+    Component _component;
 
-    PizzaDecorator(this.pizza);
-
-    @override
-    String getDescription() {
-        return pizza.getDescription();
-    }
+    Decorator(this._component);
 
     @override
-    double getCost() {
-        return pizza.getCost();
+    void operation() {
+        _component.operation();
     }
 }
 
-class CheeseDecorator extends PizzaDecorator {
-    CheeseDecorator(Pizza pizza) : super(pizza);
+class ConcreteDecoratorA extends Decorator {
+    ConcreteDecoratorA(Component component) : super(component);
 
     @override
-    String getDescription() {
-        return "${pizza.getDescription()}, Cheese";
-    }
-
-    @override
-    double getCost() {
-        return pizza.getCost() + 1.99;
+    void operation() {
+        super.operation();
+        print('ConcreteDecoratorA operation');
     }
 }
 
-class PepperoniDecorator extends PizzaDecorator {
-    PepperoniDecorator(Pizza pizza) : super(pizza);
+class ConcreteDecoratorB extends Decorator {
+    ConcreteDecoratorB(Component component) : super(component);
 
     @override
-    String getDescription() {
-        return "${pizza.getDescription()}, Pepperoni";
-    }
-
-    @override
-    double getCost() {
-        return pizza.getCost() + 2.99;
+    void operation() {
+        super.operation();
+        print('ConcreteDecoratorB operation');
     }
 }
 
 void main() {
-    Pizza margherita = MargheritaPizza();
-    Pizza margheritaWithCheese = CheeseDecorator(margherita);
-    Pizza margheritaWithCheeseAndPepperoni =
-            PepperoniDecorator(margheritaWithCheese);
-
-    print(margheritaWithCheeseAndPepperoni.getDescription());
-    print("Cost: \$${margheritaWithCheeseAndPepperoni.getCost()}");
+    Component component = ConcreteComponent();
+    Component decoratorA = ConcreteDecoratorA(component);
+    Component decoratorB = ConcreteDecoratorB(decoratorA);
+    decoratorB.operation();
 }
 ```
 
-- Facade: The Facade pattern provides a simplified interface to a complex subsystem, making it easier to use and understand.
+### Facade
+
+The Facade pattern provides a simplified interface to a complex subsystem, making it easier to use and understand.
 
 ```dart
 class SubsystemA {
     void operationA() {
-        print("Subsystem A operation");
+        print('SubsystemA operationA');
     }
 }
 
 class SubsystemB {
     void operationB() {
-        print("Subsystem B operation");
+        print('SubsystemB operationB');
     }
 }
 
 class SubsystemC {
     void operationC() {
-        print("Subsystem C operation");
+        print('SubsystemC operationC');
     }
 }
 
 class Facade {
-    final SubsystemA subsystemA;
-    final SubsystemB subsystemB;
-    final SubsystemC subsystemC;
+    SubsystemA _subsystemA;
+    SubsystemB _subsystemB;
+    SubsystemC _subsystemC;
 
-    Facade()
-            : subsystemA = SubsystemA(),
-                subsystemB = SubsystemB(),
-                subsystemC = SubsystemC();
+    Facade() {
+        _subsystemA = SubsystemA();
+        _subsystemB = SubsystemB();
+        _subsystemC = SubsystemC();
+    }
 
     void operation() {
-        subsystemA.operationA();
-        subsystemB.operationB();
-        subsystemC.operationC();
+        _subsystemA.operationA();
+        _subsystemB.operationB();
+        _subsystemC.operationC();
     }
 }
 
@@ -552,94 +494,72 @@ void main() {
 }
 ```
 
-- Flyweight: The Flyweight pattern reduces the memory footprint of an application by sharing common data across multiple objects.
+### Flyweight
+
+The Flyweight pattern reduces the memory footprint of an application by sharing common data across multiple objects.
 
 ```dart
-abstract class Shape {
-    void draw();
-}
+class Flyweight {
+    final String _sharedData;
 
-class Circle implements Shape {
-    final String color;
+    Flyweight(this._sharedData);
 
-    Circle(this.color);
-
-    @override
-    void draw() {
-        print("Drawing a $color circle");
+    void operation(String uniqueData) {
+        print('Shared data: $_sharedData, Unique data: $uniqueData');
     }
 }
 
-class ShapeFactory {
-    static final Map<String, Shape> circleMap = {};
+class FlyweightFactory {
+    Map<String, Flyweight> _flyweights = {};
 
-    static Shape getCircle(String color) {
-        Shape? circle = circleMap[color];
-
-        if (circle == null) {
-            circle = Circle(color);
-            circleMap[color] = circle;
+    Flyweight getFlyweight(String sharedData) {
+        if (!_flyweights.containsKey(sharedData)) {
+            _flyweights[sharedData] = Flyweight(sharedData);
         }
-
-        return circle;
+        return _flyweights[sharedData];
     }
 }
 
 void main() {
-    final List<String> colors = ["Red", "Green", "Blue"];
-
-    for (int i = 0; i < 10; i++) {
-        String color = colors[i % colors.length];
-        Shape circle = ShapeFactory.getCircle(color);
-        circle.draw();
-    }
+    FlyweightFactory factory = FlyweightFactory();
+    Flyweight flyweight1 = factory.getFlyweight('SharedData');
+    Flyweight flyweight2 = factory.getFlyweight('SharedData');
+    flyweight1.operation('UniqueData1');
+    flyweight2.operation('UniqueData2');
 }
 ```
 
-- Proxy: The Proxy pattern provides a surrogate or placeholder for another object to control access to it.
+### Proxy
+
+The Proxy pattern provides a surrogate or placeholder for another object to control access to it.
 
 ```dart
-abstract class Image {
-    void display();
+abstract class Subject {
+    void request();
 }
 
-class RealImage implements Image {
-    final String filename;
-
-    RealImage(this.filename) {
-        loadFromDisk();
-    }
-
-    void loadFromDisk() {
-        print("Loading image: $filename");
-    }
-
+class RealSubject implements Subject {
     @override
-    void display() {
-        print("Displaying image: $filename");
+    void request() {
+        print('RealSubject request');
     }
 }
 
-class ProxyImage implements Image {
-    final String filename;
-    RealImage? realImage;
+class Proxy implements Subject {
+    RealSubject _realSubject;
 
-    ProxyImage(this.filename);
+    Proxy(this._realSubject);
 
     @override
-    void display() {
-        realImage ??= RealImage(filename);
-        realImage!.display();
+    void request() {
+        _realSubject.request();
     }
 }
 
 void main() {
-    Image image1 = ProxyImage("image1.jpg");
-    Image image2 = ProxyImage("image2.jpg");
-
-    image1.display();
-    image1.display();
-    image2.display();
+    RealSubject realSubject = RealSubject();
+    Proxy proxy = Proxy(realSubject);
+    proxy.request();
 }
 ```
 
@@ -647,121 +567,100 @@ void main() {
 
 Behavioral patterns focus on the interaction between objects, defining how they communicate and collaborate to achieve a specific behavior. Some commonly used behavioral patterns include:
 
-- Observer: The Observer pattern defines a one-to-many dependency between objects, so that when one object changes state, all its dependents are notified and updated automatically.
+### Observer
+
+The Observer pattern defines a one-to-many dependency between objects, so that when one object changes state, all its dependents are notified and updated automatically.
 
 ```dart
 abstract class Observer {
     void update();
 }
 
-class ConcreteObserver implements Observer {
-    final String name;
-    final Subject subject;
-
-    ConcreteObserver(this.name, this.subject);
-
+class ConcreteObserverA implements Observer {
     @override
     void update() {
-        print("$name received an update: ${subject.getState()}");
+        print('ConcreteObserverA update');
     }
 }
 
-abstract class Subject {
-    void attach(Observer observer);
-    void detach(Observer observer);
-    void notifyObservers();
-    String getState();
+class ConcreteObserverB implements Observer {
+    @override
+    void update() {
+        print('ConcreteObserverB update');
+    }
 }
 
-class ConcreteSubject implements Subject {
-    final List<Observer> observers = [];
-    String state = "";
+class Subject {
+    List<Observer> _observers = [];
 
-    @override
     void attach(Observer observer) {
-        observers.add(observer);
+        _observers.add(observer);
     }
 
-    @override
     void detach(Observer observer) {
-        observers.remove(observer);
+        _observers.remove(observer);
     }
 
-    @override
-    void notifyObservers() {
-        for (Observer observer in observers) {
+    void notify() {
+        for (Observer observer in _observers) {
             observer.update();
         }
     }
-
-    @override
-    String getState() {
-        return state;
-    }
-
-    void setState(String state) {
-        this.state = state;
-        notifyObservers();
-    }
 }
 
 void main() {
-    Subject subject = ConcreteSubject();
-    Observer observer1 = ConcreteObserver("Observer 1", subject);
-    Observer observer2 = ConcreteObserver("Observer 2", subject);
-
-    subject.attach(observer1);
-    subject.attach(observer2);
-
-    subject.setState("New state");
+    Subject subject = Subject();
+    Observer observerA = ConcreteObserverA();
+    Observer observerB = ConcreteObserverB();
+    subject.attach(observerA);
+    subject.attach(observerB);
+    subject.notify();
 }
 ```
 
-- Strategy: The Strategy pattern defines a family of algorithms, encapsulates each one, and makes them interchangeable. It lets the algorithm vary independently from clients that use it.
+### Strategy
+
+The Strategy pattern defines a family of algorithms, encapsulates each one, and makes them interchangeable. It lets the algorithm vary independently from clients that use it.
 
 ```dart
-abstract class SortingStrategy {
-    void sort(List<int> array);
+abstract class Strategy {
+    void algorithm();
 }
 
-class BubbleSortStrategy implements SortingStrategy {
+class ConcreteStrategyA implements Strategy {
     @override
-    void sort(List<int> array) {
-        // Bubble sort implementation
+    void algorithm() {
+        print('ConcreteStrategyA algorithm');
     }
 }
 
-class QuickSortStrategy implements SortingStrategy {
+class ConcreteStrategyB implements Strategy {
     @override
-    void sort(List<int> array) {
-        // Quick sort implementation
+    void algorithm() {
+        print('ConcreteStrategyB algorithm');
     }
 }
 
-class MergeSortStrategy implements SortingStrategy {
-    @override
-    void sort(List<int> array) {
-        // Merge sort implementation
-    }
-}
+class Context {
+    Strategy _strategy;
 
-class Sorter {
-    SortingStrategy? sortingStrategy;
+    Context(this._strategy);
 
-    void setSortingStrategy(SortingStrategy sortingStrategy) {
-        this.sortingStrategy = sortingStrategy;
+    void setStrategy(Strategy strategy) {
+        _strategy = strategy;
     }
 
-    void sort(List<int> array) {
-        sortingStrategy?.sort(array);
+    void execute() {
+        _strategy.algorithm();
     }
 }
 
 void main() {
-    Sorter sorter = Sorter();
-    List<int> array = [5, 2, 8, 1, 9];
-
-    sorter.setSortingStrategy(BubbleSortStrategy());
-    sorter.sort(array);
+    Strategy strategyA = ConcreteStrategyA();
+    Strategy strategyB = ConcreteStrategyB();
+    Context context = Context(strategyA);
+    context.execute();
+    context.setStrategy(strategyB);
+    context.execute();
 }
 ```
